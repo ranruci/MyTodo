@@ -45,38 +45,44 @@
 			remind_date_check();
 		}
 	}
-	//pop(11);
+
 	function pop(arg) {
-		if (!arg) {
-			console.log("pop title is required");
-		}
 		var conf={
-			boxwidth: '280',
-			boxheight: '170'
-		},$box,$mask;
-		if (typeof arg == 'string') {
+			boxWidth: '280',
+			boxHeight: '150',
+			title: '确认删除此清单？',
+			boxBg: '#dea06b',
+			titleColor: '#222',
+			buttonBg: '#f6fffc',
+			buttonBgHover: '#9adcc4'
+		},
+		$box,$mask,$pop_title,$pop_content,$confirm,$cancel,confirmed,timer,dfd;
+		dfd=$.Deferred();
+		if (typeof(arg) == 'string') {
+			console.log(1);
 			conf.title = arg;
 		}else{
+			console.log(2);
 			conf=$.extend(true, conf, arg);
 		}
-
+		/*弹框模板和遮罩模板*/
 		$box=$('<div>'+
-			'<div class="pop-title">title</div>'+
+			'<div class="pop-title">'+conf.title+'</div>'+
 			'<div class="pop-content">'+
 			'<button class="confirm" type="button">确定</button>'+
 			'<button class="cancel" type="button">取消</button>'+
 			'</div>'+
 			'</div>').css({
-			width: conf.boxwidth,
-			height: conf.boxheight,
-			background: '#dea06b',
+			width: conf.boxWidth,
+			height: conf.boxHeight,
+			background: conf.boxBg,
 			'border-radius': '3px',
 			'box-shadow': '0 1px 2px rgba(0,0,0,.6)',
 			position: 'fixed',
 			left: '50%',
 			top: '40%',
-			marginTop: parseInt(-conf.boxheight/2),
-			marginLeft: parseInt(-conf.boxwidth/2),
+			marginTop: parseInt(-conf.boxHeight/2),
+			marginLeft: parseInt(-conf.boxWidth/2),
 			'text-align': 'center'
 		});
 		$mask=$('<div></div>').css({
@@ -85,11 +91,66 @@
 			right: '0',
 			bottom: '0',
 			left: '0',
-			background: 'rgba(0,0,0,.5)'
+			background: 'rgba(0,0,0,.3)'
 		});
+		
 		$body.append($mask);
 		$body.append($box);
+		$confirm=$('.confirm');
+		$cancel=$('.cancel');
+		$pop_title=$('.pop-title').css({
+			height: parseInt(conf.boxHeight*0.618),
+			lineHeight: parseInt(conf.boxHeight*0.618+10)+'px',
+			padding: '0 5px',
+			overflow: 'hidden',
+			color: conf.titleColor,
+			fontSize: 20
+		});
+		$pop_content=$('.pop-content').css('lineHeight', parseInt(conf.boxHeight*0.382)+'px');
+		$pop_content.find('button').css({
+			width: parseInt(conf.boxWidth*0.2),
+			display: 'inline-block',
+			border: 0,
+			outline: 'none',
+			cursor: 'pointer',
+			background: conf.buttonBg,
+			boxSizing: 'border-box',
+			padding: '7px 10px',
+			marginRight: parseInt(conf.boxWidth*0.12),
+			marginLeft: parseInt(conf.boxWidth*0.12),
+			'border-radius': '3px',
+			'box-shadow': '0 1px 2px rgba(0,0,0,.4)',
+			transition: 'background .2s'
+		}).hover(function() {
+			$(this).css('background', conf.buttonBgHover);
+		}, function() {
+			$(this).css('background', conf.buttonBg);
+		});
+
+		timer=setInterval(function () {
+			if (confirmed !== undefined) {
+				dfd.resolve(confirmed);
+				clearInterval(timer);
+				dismiss_pop($mask,$box);                                                                                                                             
+			}
+		},50)
+		$confirm.on('click', function() {
+			confirmed =true;
+		});
+		$cancel.on('click', function() {
+			confirmed =false;
+		});
+		$mask.on('click', function() {
+			confirmed =false;
+		});
+		return dfd.promise();
 	}
+
+	function dismiss_pop(a,b) {
+		a.remove();
+		b.remove();
+	}
+
 	/*监听提醒时间，定时提醒*/
 	function remind_date_check() {
 		var i,item,current_time,remind_time;
@@ -224,11 +285,11 @@
 		/*如果没有index或者index的元素不存在，则返回*/
 		if (index==undefined || !task_list[index]) return;
 		//delete task_list[index];
-		var tmp=confirm('确认删除？');
-		tmp ? task_list.splice(index,1) : null;
-		
-		/*删除一条清单后更新localstorage，并且重新渲染tpl*/
-		refresh_task_list();
+		pop().then(function (r) {
+			r ? task_list.splice(index,1) : null;
+			/*删除一条清单后更新localstorage，并且重新渲染tpl*/
+			refresh_task_list();
+	    });
 	}
 
 	/*
@@ -291,6 +352,7 @@
 	function render_task_detail(index) {
 		/*如果没有index或者所给index无对应值，则返回*/
 		if (index==undefined || !task_list[index]) return;
+		/*创建清单详情模板*/
 		var tpl='<form>'+
 				'<div class="content detial-item">'+(task_list[index].content || "")+'</div>'+
 				'<div class="detial-item"><input style="display:none" type="text"'+
@@ -308,25 +370,32 @@
         		'<button type="submit">更新</button>'+
         	    '</div>'+
         	    '</form>';
+        /*清空上一个清单的模板*/
 	    $detail_task.html(null);
+	    /*添加当前清单模板*/
 	    $detail_task.html(tpl);
 	    $detail_task_content=$detail_task.find('.content');
 	    $detail_task_content_input=$detail_task.find('[name=content]');
-
+	    /*为input引用datetimepicker日期选择控件*/
 	    $('.datetime').datetimepicker();
 
+	    /*监听清单详情页的标题栏的双击事件，如果双击，则切换至编辑状态*/
 	    $detail_task_content.on('dblclick', function() {
 	    	$detail_task_content_input.show();
 	    	$detail_task_content.hide();
 	    });
 
+	    /*监听清单详情页的提交事件*/
 	    $detail_task.find('form').on('submit', function(event) {
 	    	event.preventDefault();
+	    	/*获取清单详情页的更新后的数据*/
 	    	var data={};
 	    	data.content=$(this).find('[name=content]').val();
 			data.desc=$(this).find('[name=desc]').val();
 			data.remind_date=$(this).find('[name=remind-date]').val();
+			/*每次更新时设置当前清单的提醒标杆为FALSE*/
 			data.comfirmed=false;
+			/*更新task_list并隐藏清单详情页*/
 	    	update_task(index,data);
 	    	task_detial_hide();
 	    });
