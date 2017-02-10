@@ -1,0 +1,187 @@
+/*样式初始化开始*/
+body{
+	background: #127079;
+	color: #fff;
+}
+h1{
+	text-align: center;
+}
+ul,li{
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+li{
+  list-style: none;
+}
+/*样式初始化结束*/
+
+
+/*容器样式开始*/
+.container{
+	max-width: 700px;
+	min-width: 300px;
+	margin: 60px auto;
+	position: relative;
+}
+/*容器样式结束*/
+
+
+/*输入框样式开始*/
+input[type=text],input[type=date],textarea{
+	width: 100%;
+	background: #ddd;
+	border: 0;
+	outline: 0;
+}
+input[type=text]:hover,input[type=date]:hover,
+input[type=text]:focus,input[type=date]:focus,
+textarea:hover,textarea:focus{
+	background: #F7F7F7;
+}
+/*输入框样式结束*/
+
+
+/*按钮样式开始*/
+button{
+	display: inline-block;
+	border: 0;
+	outline: none;
+	cursor: pointer;
+	background: #27d092;
+}
+button:hover{
+	background: #32ffab;
+}
+/*按钮样式结束*/
+
+
+/*添加清单样式开始*/
+.add-task input[type=text]{
+	float: left;
+	width: 84%;
+	margin-right: 1%;
+}
+.add-task button[type=submit]{
+	width: 15%;
+}
+/*添加清单样式结束*/
+
+
+/*阴影，圆角，动画过渡公用样式开始*/
+input[type=text],input[type=date],button,.task-item,.task-detail,textarea{
+	box-sizing: border-box;
+	padding: 10px;
+	border-radius: 3px;
+	box-shadow: 0 2px 3px rgba(0,0,0,.4);
+	transition: background .2s;
+}
+/*阴影，圆角，动画过渡公用样式结束*/
+
+textarea{
+	border: 0;
+	outline: none;
+	width: 100%;
+	min-height: 80px;
+}
+
+/*清单部分样式开始*/
+.task-list{
+	margin: 10px 0;
+}
+.task-item{
+	
+	background: #fff;
+	color: #333;
+	margin-bottom: 2px;
+	
+	cursor: pointer;
+}
+.task-item:hover{
+	background: #ccc;
+}
+.task-content{
+	margin-left: 10px;
+}
+.fr{
+	float: right;
+}
+.action{
+	color: #888;
+	font-size: 90%;
+	padding: 5px;
+	cursor: pointer;
+}
+.action:hover{
+	color: #333;
+}
+.completed{
+	color: #aaa;
+	filter: alpha(opacity=80);
+	opacity: 0.8;
+}
+.completed:after{
+	content: '';
+	height: 1px;
+	width: 80%;
+	background: #aaa;
+	position: relative;
+	top:-8px;
+	left: 22px;
+	display: block;
+}
+/*清单部分样式结束*/
+
+.task-detail{
+	width: 50%;
+	height: 100%;
+	max-height: 280px;
+	position: absolute;
+	right: 0;
+	bottom: 0;
+	border-radius: 3px 0 0 3px;
+	background: #c0d0bf;
+	color: #000;
+	display: none;
+	overflow: auto;
+}
+.task-detail .content{
+	padding: 10px;
+	font-weight: 800;
+	cursor: pointer;
+}
+.task-detail-mask{
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	
+	display: none;
+}
+.desc{
+	padding: 0;
+}
+.detial-item{
+	margin-bottom: 10px;
+}
+
+.msg{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	padding: 6px;
+	color: #333;
+	background: #A9E368;
+	display: none;
+}
+.msg-confirm{
+	cursor: pointer;
+	color: #000;
+}
+.alerter{
+	width: 0;
+	height: 0;
+}

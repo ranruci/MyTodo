@@ -1,0 +1,27 @@
+{
+  "name": "task",
+  "version": "1.0.0",
+  "description": "a list to show what to do next",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/loohopen/MyTodo.git"
+  },
+  "keywords": [
+    "javascript"
+  ],
+  "author": "loohopen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/loohopen/MyTodo/issues"
+  },
+  "homepage": "https://github.com/loohopen/MyTodo#readme",
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "jquery-datetimepicker": "^2.5.4",
+    "normalize.css": "^5.0.0"
+  }
+}
