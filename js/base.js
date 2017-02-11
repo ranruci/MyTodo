@@ -46,7 +46,10 @@
 		}
 	}
 
+	/*
+	 *自定义弹出框*/
 	function pop(arg) {
+		/*初始化配置*/
 		var conf={
 			boxWidth: '280',
 			boxHeight: '150',
@@ -57,15 +60,17 @@
 			buttonBgHover: '#9adcc4'
 		},
 		$box,$mask,$pop_title,$pop_content,$confirm,$cancel,confirmed,timer,dfd;
+		/*新建一个Deferred，实现点击确认或取消按钮后的回调*/
 		dfd=$.Deferred();
+		/*对弹出框组件传参进行处理*/
 		if (typeof(arg) == 'string') {
-			console.log(1);
+			
 			conf.title = arg;
 		}else{
-			console.log(2);
+			
 			conf=$.extend(true, conf, arg);
 		}
-		/*弹框模板和遮罩模板*/
+		/*弹框模板和遮罩模板及其基本样式设定*/
 		$box=$('<div>'+
 			'<div class="pop-title">'+conf.title+'</div>'+
 			'<div class="pop-content">'+
@@ -93,11 +98,13 @@
 			left: '0',
 			background: 'rgba(0,0,0,.3)'
 		});
-		
+		/*将弹出框和遮罩层插入到body*/
 		$body.append($mask);
 		$body.append($box);
+		/*获取确认及取消按钮*/
 		$confirm=$('.confirm');
 		$cancel=$('.cancel');
+		/*设置弹框标题及按钮的样式*/
 		$pop_title=$('.pop-title').css({
 			height: parseInt(conf.boxHeight*0.618),
 			lineHeight: parseInt(conf.boxHeight*0.618+10)+'px',
@@ -127,25 +134,34 @@
 			$(this).css('background', conf.buttonBg);
 		});
 
+		/*设置定时检测用户是否点击了弹框按钮*/
 		timer=setInterval(function () {
 			if (confirmed !== undefined) {
+				/*如果用户点击了按钮，则改变Deferred对象的执行状态，并将flag值传入*/
 				dfd.resolve(confirmed);
+				/*清空定时器*/
 				clearInterval(timer);
+				/*销毁弹出组件*/
 				dismiss_pop($mask,$box);                                                                                                                             
 			}
-		},50)
+		},50);
+		/*当用户点击确认后，将flag设置为true*/
 		$confirm.on('click', function() {
 			confirmed =true;
 		});
+		/*当用户点击取消后，将flag设置为false*/
 		$cancel.on('click', function() {
 			confirmed =false;
 		});
+		/*当用户点击遮罩层时，将flag设置为false*/
 		$mask.on('click', function() {
 			confirmed =false;
 		});
+		/*返回deferred对象*/
 		return dfd.promise();
 	}
 
+	/*销毁弹框组件*/
 	function dismiss_pop(a,b) {
 		a.remove();
 		b.remove();
@@ -285,6 +301,7 @@
 		/*如果没有index或者index的元素不存在，则返回*/
 		if (index==undefined || !task_list[index]) return;
 		//delete task_list[index];
+		/*使用自定义弹框组件，并使用传参值进行判断是否删除清单*/
 		pop().then(function (r) {
 			r ? task_list.splice(index,1) : null;
 			/*删除一条清单后更新localstorage，并且重新渲染tpl*/
